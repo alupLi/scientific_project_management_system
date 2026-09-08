@@ -38,13 +38,13 @@ def check_project_status(project):
     return f"Всего задач: {total}"
 
 # Текстирование функций
-project = create_project("Квантовые вычисления", date(2026, 9, 1), date(2027, 6, 30))
+project = create_project("Проект 1", date(2026, 9, 1), date(2027, 6, 30))
 print(f"Проект: {project['name']}")
 
-assign_task(project, "Разработка алгоритма", "Иванов", date(2026, 12, 1))
-assign_task(project, "Тестирование", "Петров", date(2027, 1, 15))
+assign_task(project, "Задачча 1", "Чел 1", date(2026, 12, 1))
+assign_task(project, "Задача 2", "Чел 2", date(2027, 1, 15))
 
-add_publication(project, "Квантовые алгоритмы", "Nature", "Иванов, Петров")
+add_publication(project, "Проект 1", "Публикация 1", "Чел 1, Чел 2")
 
 print(f"Задачи: {len(project['tasks'])}")
 print(f"Публикации: {len(project['publications'])}")
