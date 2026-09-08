@@ -1,20 +1,30 @@
 from datetime import date
 
-# тестовые данные
-project = "Проект 1"
-task = "Задача 1"
-deadline = date(2026, 9, 25)
+# Создание проекта
+def create_project(name, start, end):
+    return {
+        "name": name,
+        "start": start,
+        "end": end,
+        "tasks": []
+    }
 
-# функция для вывода оставшихся дней
-def check_deadline(deadline):
-    days = (deadline - date.today()).days
-    if days < 0:
-        return "Просрочено!"
-    else:
-        return f"{days} дней осталось."
+# Назначение задач
+def assign_task(project, task_name, researcher):
+    project["tasks"].append({
+        "task": task_name,
+        "researcher": researcher,
+        "status": "active"
+    })
+    return f"Задача '{task_name}' назначена {researcher}"
 
-# тестовый вывод
-print(f"Проект: {project}")
-print(f"Задача: {task}")
-print(f"Дедлайн: {deadline}")
-print(check_deadline(deadline))
+# Привязка публикаций к проектам
+def add_publication(title, project_name, authors):
+    return f"Публикация '{title}' добавлена к проекту '{project_name}'"
+
+# Тестирование функций
+project = create_project("Квантовые вычисления", date(2026, 9, 1), date(2027, 6, 30))
+print(f"Проект: {project['name']}")
+print(assign_task(project, "Разработка алгоритма", "Иванов И.И."))
+print(add_publication("Квантовые алгоритмы", project['name'], "Иванов И.И., Петров П.П."))
+print(f"Задачи в проекте: {len(project['tasks'])}")
