@@ -6,25 +6,46 @@ def create_project(name, start, end):
         "name": name,
         "start": start,
         "end": end,
-        "tasks": []
+        "tasks": [],
+        "publications": []
     }
 
-# Назначение задач
-def assign_task(project, task_name, researcher):
+# Создание задачи
+def assign_task(project, task_name, researcher, deadline):
     project["tasks"].append({
         "task": task_name,
         "researcher": researcher,
+        "deadline": deadline,
         "status": "active"
     })
     return f"Задача '{task_name}' назначена {researcher}"
 
-# Привязка публикаций к проектам
-def add_publication(title, project_name, authors):
-    return f"Публикация '{title}' добавлена к проекту '{project_name}'"
+# Добавление публикации
+def add_publication(project, title, journal, authors):
+    project["publications"].append({
+        "title": title,
+        "journal": journal,
+        "authors": authors,
+        "date": date.today()
+    })
+    return f"Публикация '{title}' добавлена"
 
-# Тестирование функций
+# Статус проекта
+def check_project_status(project):
+    total = len(project["tasks"])
+    if total == 0:
+        return "Нет задач"
+    return f"Всего задач: {total}"
+
+# Текстирование функций
 project = create_project("Квантовые вычисления", date(2026, 9, 1), date(2027, 6, 30))
 print(f"Проект: {project['name']}")
-print(assign_task(project, "Разработка алгоритма", "Иванов И.И."))
-print(add_publication("Квантовые алгоритмы", project['name'], "Иванов И.И., Петров П.П."))
-print(f"Задачи в проекте: {len(project['tasks'])}")
+
+assign_task(project, "Разработка алгоритма", "Иванов", date(2026, 12, 1))
+assign_task(project, "Тестирование", "Петров", date(2027, 1, 15))
+
+add_publication(project, "Квантовые алгоритмы", "Nature", "Иванов, Петров")
+
+print(f"Задачи: {len(project['tasks'])}")
+print(f"Публикации: {len(project['publications'])}")
+print(check_project_status(project))
