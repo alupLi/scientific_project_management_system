@@ -1,32 +1,35 @@
-# Добавление задачи в проет
+from typing import List
+from models import Project, Task
+
+
+# Назначение задачи проекту
 def assign_task(
-    projects: dict,
+    projects: List[Project],
     project_id: int,
     task_name: str,
     researcher: str,
     deadline: str,
 ) -> bool:
-    if project_id not in projects:
+    project = next((p for p in projects if p.id == project_id), None)
+    if not project:
         return False
-    projects[project_id]["tasks"].append({
-        "task": task_name,
-        "researcher": researcher,
-        "deadline": deadline,
-        "status": "active",
-    })
+
+    new_task = Task(task_name, researcher, deadline)
+    project.add_task(new_task)
     return True
 
 
-# Статус задачи
 def get_task_status(is_active: bool) -> str:
     if is_active:
         return "Задача активна"
     return "Задача завершена"
 
 
-# Фильтр задач по статусу
-def filter_tasks_by_status(projects: dict, status: str) -> list:
-    for project in projects.values():
-        for task in project["tasks"]:
-            if task["status"] == status:
-                task
+# Фильтр задачи по статусу
+def filter_tasks_by_status(projects: List[Project], status: str) -> List[Task]:
+    result = []
+    for project in projects:
+        for task in project.tasks:
+            if task.status == status:
+                result.append(task)
+    return result

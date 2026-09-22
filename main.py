@@ -1,10 +1,14 @@
 from datetime import date
-
-from storage import load_json, save_json
+from storage import (
+    load_projects, save_projects,
+    load_researchers, save_researchers,
+    load_publications, save_publications
+)
 from projects import create_project, find_projects, projects_statistics
 from tasks import assign_task
 from publications import add_publication
 from utils import input_int, input_date
+from models import Project
 
 DATA = "data"
 PROJECTS_FILE = f"{DATA}/projects.json"
@@ -12,24 +16,18 @@ RESEARCHERS_FILE = f"{DATA}/researchers.json"
 PUBLICATIONS_FILE = f"{DATA}/publications.json"
 
 
-# Вывод списка проекта
-def show_projects(projects: dict) -> None:
+def show_projects(projects: list[Project]) -> None:
     if not projects:
         print("Проектов нет.")
         return
-    for pid, p in projects.items():
-        print(
-            f"[{pid}] {p['name']} "
-            f"({p['start']} — {p['end']}), "
-            f"задач: {len(p['tasks'])}"
-        )
+    for p in projects:
+        print(p)
 
 
-# Меню приложения
 def main() -> None:
-    projects = load_json(PROJECTS_FILE, {})
-    researchers = load_json(RESEARCHERS_FILE, {})
-    publications = load_json(PUBLICATIONS_FILE, [])
+    projects = load_projects(PROJECTS_FILE)
+    researchers = load_researchers(RESEARCHERS_FILE)
+    publications = load_publications(PUBLICATIONS_FILE)
 
     while True:
         print("\n~~~ Система управления научными проектами ~~~")
@@ -48,13 +46,12 @@ def main() -> None:
             name = input("Название проекта: ")
             start = input_date("Дата начала (ДД.ММ.ГГГГ): ")
             end = input_date("Дата окончания (ДД.ММ.ГГГГ): ")
-            pid = create_project(
-                projects,
-                name,
+            new_project = create_project(
+                projects, name,
                 date.fromisoformat(start),
-                date.fromisoformat(end),
+                date.fromisoformat(end)
             )
-            print(f"Создан проект id={pid}")
+            print(f"Создан проект id={new_project.id}")
         elif choice == 3:
             pid = input_int("ID проекта: ")
             task = input("Название задачи: ")
@@ -73,7 +70,7 @@ def main() -> None:
         elif choice == 5:
             q = input("Поиск по названию: ")
             for p in find_projects(projects, q):
-                print(f"[{p['id']}] {p['name']}")
+                print(p)
         elif choice == 6:
             print(projects_statistics(projects))
         elif choice == 0:
@@ -81,9 +78,9 @@ def main() -> None:
         else:
             print("Неверный пункт.")
 
-    save_json(PROJECTS_FILE, projects)
-    save_json(RESEARCHERS_FILE, researchers)
-    save_json(PUBLICATIONS_FILE, publications)
+    save_projects(PROJECTS_FILE, projects)
+    save_researchers(RESEARCHERS_FILE, researchers)
+    save_publications(PUBLICATIONS_FILE, publications)
     print("Данные сохранены. Выход.")
 
 

@@ -81,3 +81,38 @@ py -m pytest
 
 ## Проверка
 py -m flake8
+
+
+## Структура проекта
+- `main.py` — точка входа и меню;
+- `models/` — пакет с классами предметной области:
+  - `researcher.py` — класс Researcher;
+  - `project.py` — класс Project;
+  - `task.py` — класс Task;
+  - `publication.py` — класс Publication;
+- `projects.py` — функции для работы с проектами;
+- `researchers.py` — функции для работы с исследователями;
+- `tasks.py` — функции для работы с задачами;
+- `publications.py` — функции для работы с публикациями;
+- `storage.py` — сохранение и загрузка JSON (с преобразованием в объекты);
+- `utils.py` — безопасный ввод;
+- `data/` — JSON-файлы данных;
+- `tests/` — автоматизированные тесты.
+
+## Основные классы
+
+### Researcher
+- **Атрибуты**: `id`, `name`, `field`.
+- **Методы**: `__str__`, `from_dict`, `to_dict`.
+
+### Project
+- **Атрибуты**: `id`, `name`, `start`, `end`, `tasks` (список объектов Task).
+- **Методы**: `add_task`, `__str__`, `from_dict`, `to_dict`.
+
+### Task
+- **Атрибуты**: `task_name`, `researcher`, `deadline`, `status`.
+- **Методы**: `__str__`, `from_dict`, `to_dict`.
+
+### Publication
+- **Атрибуты**: `title`, `journal`, `authors`, `date`.
+- **Методы**: `__str__`, `from_dict`, `to_dict`.

@@ -1,19 +1,22 @@
-# Добавление исследователя
-def add_researcher(researchers: dict, name: str, field: str) -> int:
-    new_id = max(researchers.keys(), default=0) + 1
-    researchers[new_id] = {"name": name, "field": field}
-    return new_id
+from typing import List
+from models import Researcher
 
 
-# Поиск исследователя по имени
-def find_researcher(researchers: dict, query: str) -> list:
-    return [
-        {"id": rid, **data}
-        for rid, data in researchers.items()
-        if query.lower() in data["name"].lower()
-    ]
+def add_researcher(researchers: List[Researcher],
+                   name: str,
+                   field: str
+                   ) -> Researcher:
+    new_id = max((r.id for r in researchers), default=0) + 1
+    new_researcher = Researcher(new_id, name, field)
+    researchers.append(new_researcher)
+    return new_researcher
 
 
-# Количество исследователей
-def count_researchers(researchers: dict) -> int:
+def find_researcher(researchers: List[Researcher],
+                    query: str
+                    ) -> List[Researcher]:
+    return [r for r in researchers if query.lower() in r.name.lower()]
+
+
+def count_researchers(researchers: List[Researcher]) -> int:
     return len(researchers)

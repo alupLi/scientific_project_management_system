@@ -1,24 +1,26 @@
+from typing import List
 from datetime import date
+from models import Publication
 
 
-# Добавление публикации
-def add_publication(publications: list, title: str, journal: str, authors: str
-                    ) -> dict:
-    pub = {
-        "title": title,
-        "journal": journal,
-        "authors": authors,
-        "date": date.today().isoformat(),
-    }
-    publications.append(pub)
-    return pub
+def add_publication(
+    publications: List[Publication],
+    title: str,
+    journal: str,
+    authors: str
+) -> Publication:
+    new_pub = Publication(title, journal, authors, date.today().isoformat())
+    publications.append(new_pub)
+    return new_pub
 
 
-# Поиск публикации по названию
-def find_publications(publications: list, query: str) -> list:
-    return [p for p in publications if query.lower() in p["title"].lower()]
+def find_publications(publications: List[Publication],
+                      query: str
+                      ) -> List[Publication]:
+    return [p for p in publications if query.lower() in p.title.lower()]
 
 
-# Публикации определенного автора
-def publications_by_author(publications: list, author: str) -> list:
-    return [p for p in publications if author.lower() in p["authors"].lower()]
+def publications_by_author(publications: List[Publication],
+                           author: str
+                           ) -> List[Publication]:
+    return [p for p in publications if author.lower() in p.authors.lower()]
