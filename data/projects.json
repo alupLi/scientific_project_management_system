@@ -6,13 +6,13 @@
     "tasks": [
       {
         "task": "Тест задача для проета \"Тест проект 1\"",
-        "researcher": "Тест исследователь 1",
+        "researcher": "",
         "deadline": "2026-09-05",
         "status": "active"
       },
       {
         "task": "Тест",
-        "researcher": "Тест",
+        "researcher": "",
         "deadline": "2026-09-02",
         "status": "active"
       }

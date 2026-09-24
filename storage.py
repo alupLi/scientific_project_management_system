@@ -22,14 +22,6 @@ def save_json(filename: str, data: Any) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def load_projects(filename: str) -> List[Project]:
-    raw_data = load_json(filename, {})
-    projects = []
-    for pid, p_data in raw_data.items():
-        projects.append(Project.from_dict(int(pid), p_data))
-    return projects
-
-
 def load_researchers(filename: str) -> List[Researcher]:
     raw_data = load_json(filename, {})
     researchers = []
@@ -39,9 +31,25 @@ def load_researchers(filename: str) -> List[Researcher]:
     return researchers
 
 
-def load_publications(filename: str) -> List[Publication]:
+def load_projects(filename: str,
+                  researchers: List[Researcher]) -> List[Project]:
+    raw_data = load_json(filename, {})
+    projects = []
+    for pid, p_data in raw_data.items():
+        projects.append(
+            Project.from_dict(int(pid), p_data, researchers)
+        )
+    return projects
+
+
+def load_publications(filename: str,
+                      researchers: List[Researcher]
+                      ) -> List[Publication]:
     raw_data = load_json(filename, [])
-    return [Publication.from_dict(p) for p in raw_data]
+    return [
+        Publication.from_dict(p, researchers)
+        for p in raw_data
+    ]
 
 
 def save_projects(filename: str, projects: List[Project]) -> None:

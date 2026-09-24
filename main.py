@@ -25,9 +25,9 @@ def show_projects(projects: list[Project]) -> None:
 
 
 def main() -> None:
-    projects = load_projects(PROJECTS_FILE)
     researchers = load_researchers(RESEARCHERS_FILE)
-    publications = load_publications(PUBLICATIONS_FILE)
+    projects = load_projects(PROJECTS_FILE, researchers)
+    publications = load_publications(PUBLICATIONS_FILE, researchers)
 
     while True:
         print("\n~~~ Система управления научными проектами ~~~")
@@ -55,7 +55,14 @@ def main() -> None:
         elif choice == 3:
             pid = input_int("ID проекта: ")
             task = input("Название задачи: ")
-            who = input("Исследователь: ")
+            who_name = input("Исследователь: ")
+            who = next(
+                (r for r in researchers if r.name == who_name),
+                None,
+            )
+            if not who:
+                print("Исследователь не найден.")
+                continue
             deadline = input_date("Дедлайн (ДД.ММ.ГГГГ): ")
             if assign_task(projects, pid, task, who, deadline):
                 print("Задача назначена.")

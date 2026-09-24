@@ -1,5 +1,5 @@
 from typing import List
-from models import Project, Task
+from models import Project, Task, Researcher
 
 
 # Назначение задачи проекту
@@ -7,13 +7,12 @@ def assign_task(
     projects: List[Project],
     project_id: int,
     task_name: str,
-    researcher: str,
+    researcher: Researcher,
     deadline: str,
 ) -> bool:
     project = next((p for p in projects if p.id == project_id), None)
     if not project:
         return False
-
     new_task = Task(task_name, researcher, deadline)
     project.add_task(new_task)
     return True

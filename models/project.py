@@ -27,15 +27,18 @@ class Project:
         self.tasks.append(task)
 
     @classmethod
-    def from_dict(cls, project_id: int, data: dict) -> 'Project':
+    def from_dict(cls,
+                  project_id: int,
+                  data: dict,
+                  researchers: list) -> 'Project':
         tasks_data = data.get("tasks", [])
-        tasks = [Task.from_dict(t) for t in tasks_data]
+        tasks = [Task.from_dict(t, researchers) for t in tasks_data]
         return cls(
             project_id=project_id,
             name=data["name"],
             start=data["start"],
             end=data["end"],
-            tasks=tasks
+            tasks=tasks,
         )
 
     def to_dict(self) -> dict:
@@ -43,5 +46,5 @@ class Project:
             "name": self.name,
             "start": self.start,
             "end": self.end,
-            "tasks": [t.to_dict() for t in self.tasks]
+            "tasks": [t.to_dict() for t in self.tasks],
         }
