@@ -1,9 +1,8 @@
 import json
 import os
-from typing import List, Any, TypeVar
-from models import Project, Researcher, Publication
+from typing import List, Any
 
-T = TypeVar('T')
+from models import Project, Researcher, Publication
 
 
 def load_json(filename: str, default: Any) -> Any:
@@ -23,48 +22,46 @@ def save_json(filename: str, data: Any) -> None:
 
 
 def load_researchers(filename: str) -> List[Researcher]:
-    raw_data = load_json(filename, {})
-    researchers = []
-    for rid, r_data in raw_data.items():
-        r_data['id'] = int(rid)
-        researchers.append(Researcher.from_dict(r_data))
-    return researchers
+    raw = load_json(filename, {})
+    return [
+        Researcher.from_dict({**data, "id": int(rid)})
+        for rid, data in raw.items()
+    ]
+
+
+def save_researchers(filename: str,
+                     researchers: List[Researcher]) -> None:
+    data = {
+        str(r.id): {"name": r.name, "field": r.field}
+        for r in researchers
+    }
+    save_json(filename, data)
+
+
+def load_publications(filename: str) -> List[Publication]:
+    raw = load_json(filename, [])
+    return [Publication.from_dict(p) for p in raw]
+
+
+def save_publications(filename: str,
+                      publications: List[Publication]) -> None:
+    save_json(filename, [p.to_dict() for p in publications])
 
 
 def load_projects(filename: str,
-                  researchers: List[Researcher]) -> List[Project]:
-    raw_data = load_json(filename, {})
+                  researchers: List[Researcher],
+                  publications: List[Publication]) -> List[Project]:
+    raw = load_json(filename, {})
     projects = []
-    for pid, p_data in raw_data.items():
+    for pid, p_data in raw.items():
         projects.append(
-            Project.from_dict(int(pid), p_data, researchers)
+            Project.from_dict(
+                int(pid), p_data, researchers, publications,
+            )
         )
     return projects
 
 
-def load_publications(filename: str,
-                      researchers: List[Researcher]
-                      ) -> List[Publication]:
-    raw_data = load_json(filename, [])
-    return [
-        Publication.from_dict(p, researchers)
-        for p in raw_data
-    ]
-
-
 def save_projects(filename: str, projects: List[Project]) -> None:
-    data_to_save = {str(p.id): p.to_dict() for p in projects}
-    save_json(filename, data_to_save)
-
-
-def save_researchers(filename: str, researchers: List[Researcher]) -> None:
-    data_to_save = {
-        str(r.id): {"name": r.name, "field": r.field}
-        for r in researchers
-    }
-    save_json(filename, data_to_save)
-
-
-def save_publications(filename: str, publications: List[Publication]) -> None:
-    data_to_save = [p.to_dict() for p in publications]
-    save_json(filename, data_to_save)
+    data = {str(p.id): p.to_dict() for p in projects}
+    save_json(filename, data)
