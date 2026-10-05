@@ -11,7 +11,16 @@ __pycache__/
 
 # Файлы IDE
 .vs/
+.vscode/
+
+# Файлы сохранений
+data/
 
 # Системные файлы
 .DS_Store
 Thumbs.db
+
+*.pyc
+.pytest_cache/
+.mypy_cache/
+db.sqlite3
