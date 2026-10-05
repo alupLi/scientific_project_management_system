@@ -56,48 +56,47 @@
 - сохранение данных в JSON-файлах.
 
 ## Структура проекта
-- `main.py` — точка входа и меню;
-- `projects.py` — работа с проектами;
-- `researchers.py` — работа с исследователями;
-- `tasks.py` — работа с задачами;
-- `publications.py` — работа с публикациями;
-- `storage.py` — сохранение и загрузка JSON;
-- `utils.py` — безопасный ввод;
-- `data/` — JSON-файлы данных;
-- `tests/` — автоматизированные тесты.
-
-## Требования
-- Python 3.x
-- pytest
-- flake8
-
-`py -m pip install -r requirements.txt`
-
-## Запуск
-py -m main.py
-
-## Тесты
-py -m pytest
-
-## Проверка
-py -m flake8
-
-
-## Структура проекта
-- `main.py` — точка входа и меню;
-- `models/` — пакет с классами предметной области:
-  - `researcher.py` — класс Researcher;
-  - `project.py` — класс Project;
-  - `task.py` — класс Task;
-  - `publication.py` — класс Publication;
-- `projects.py` — функции для работы с проектами;
-- `researchers.py` — функции для работы с исследователями;
-- `tasks.py` — функции для работы с задачами;
-- `publications.py` — функции для работы с публикациями;
-- `storage.py` — сохранение и загрузка JSON (с преобразованием в объекты);
-- `utils.py` — безопасный ввод;
-- `data/` — JSON-файлы данных;
-- `tests/` — автоматизированные тесты.
+```
+room_booking/
+├── manage.py
+├── roomly/                  # настройки Django-проекта
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+├── homepage/                # главная страница
+│   ├── views.py             # page() — общий каркас HTML, index()
+│   └── urls.py
+├── projects_app/            # приложение проектов
+│   ├── views.py             # projects(), project_detail()
+│   └── urls.py
+├── publications_app/        # приложение публикаций
+│   ├── views.py             # publications()
+│   └── urls.py
+├── researchers_app/         # приложение исследователей
+│   ├── views.py             # researchers()
+│   └── urls.py
+├── models/                  # классы предметной области (ПР3)
+│   ├── __init__.py
+│   ├── project.py
+│   ├── task.py
+│   ├── researcher.py
+│   └── publication.py
+├── data/                    # JSON-хранилище
+│   ├── projects.json
+│   ├── publications.json
+│   └── researchers.json
+├── tests/                   # тесты ПР3
+├── main.py                  # консольная версия (сохранена)
+├── storage.py
+├── utils.py
+├── projects.py
+├── tasks.py
+├── publications.py
+├── researchers.py
+├── requirements.txt
+└── README.md
+```
 
 ## Основные классы
 
@@ -116,3 +115,68 @@ py -m flake8
 ### Publication
 - **Атрибуты**: `title`, `journal`, `authors`, `date`.
 - **Методы**: `__str__`, `from_dict`, `to_dict`.
+
+## Используемые технологии
+
+* Python 3
+* Django 5.2 — веб-фреймворк
+* HTML — разметка веб-страниц
+* CSS и Bootstrap 5.3 — оформление страниц
+* pytest — автоматизированные тесты
+* flake8 — проверка качества кода
+
+## Веб-интерфейс
+
+Страницы приложения:
+
+| URL | Назначение | View-функция |
+|-----|-----------|--------------|
+| `/` | Главная страница | `homepage.views.index` |
+| `/projects/` | Список проектов | `projects_app.views.projects` |
+| `/projects/<int:project_id>/` | Карточка проекта | `projects_app.views.project_detail` |
+| `/publications/` | Список публикаций | `publications_app.views.publications` |
+| `/researchers/` | Список исследователей | `researchers_app.views.researchers` |
+
+При отсутствии объекта с указанным ID возвращается страница с кодом 404.
+
+
+## Запуск
+
+### Требования
+- Python 3.x
+- pytest
+- flake8
+- Django==5.2.* Для веб версии
+
+`py -m pip install -r requirements.txt`
+
+### Веб-версия (Django)
+
+```bash
+venv\Scripts\activate
+py manage.py runserver
+```
+
+Затем открыть в браузере: http://127.0.0.1:8000/
+
+### Консольная версия
+py -m main.py
+
+### Тесты
+py -m pytest
+
+### Проверка
+py -m flake8
+
+---
+
+## Текущее состояние
+
+Реализовано (ПР5):
+* Django-проект и 4 приложения (`homepage`, `projects_app`, `publications_app`, `researchers_app`)
+* маршрутизация URL двух уровней
+* view-функции и страницы
+* отображение данных предметной области (проекты, публикации, исследователи)
+* навигация между страницами
+* оформление Bootstrap 5.3
+* обработка ошибки 404
