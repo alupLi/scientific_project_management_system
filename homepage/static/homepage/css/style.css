@@ -1,0 +1,26 @@
+body {
+    min-height: 100vh;
+}
+
+.project-card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.task-status-active {
+    font-weight: 600;
+    color: #198754;
+}
+
+.task-status-other {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.site-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
