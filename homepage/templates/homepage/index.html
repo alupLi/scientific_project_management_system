@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Главная — Научные проекты{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Система управления научными проектами</h1>
+<p class="lead">
+    Приложение для управления научными проектами,
+    задачами и публикациями.
+</p>
+<p>Основные разделы:</p>
+<a href="{% url 'projects_app:projects' %}"
+   class="btn btn-primary me-2">
+    Проекты
+</a>
+<a href="{% url 'publications_app:publications' %}"
+   class="btn btn-secondary me-2">
+    Публикации
+</a>
+<a href="{% url 'researchers_app:researchers' %}"
+   class="btn btn-outline-secondary">
+    Исследователи
+</a>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if project %}{{ project.name }}{% else %}Проект не найден{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if project %}
+    <h1>{{ project.name|default:"Без названия" }}</h1>
+    <p><strong>ID:</strong> {{ project.id }}</p>
+    <p><strong>Сроки:</strong> {{ project.start }} — {{ project.end }}</p>
+
+    <h3 class="mt-4">Задачи</h3>
+    <ul class="list-group">
+        {% for task in project.tasks %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>
+                    {{ task.task_name }} —
+                    {% if task.researcher %}
+                        {{ task.researcher.name }}
+                    {% else %}
+                        не назначен
+                    {% endif %}
+                    (до {{ task.deadline }})
+                </span>
+                {% if task.status == "active" %}
+                    <span class="badge bg-success">активна</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ task.status }}</span>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li class="list-group-item">Задач нет.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Источники</h3>
+    <ul class="list-group">
+        {% for pub in project.references %}
+            <li class="list-group-item">
+                {{ pub.title }} — {{ pub.journal }} ({{ pub.date }})
+            </li>
+        {% empty %}
+            <li class="list-group-item">Источников нет.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'projects_app:projects' %}"
+       class="btn btn-outline-secondary mt-3">
+        ← к списку проектов
+    </a>
+{% else %}
+    <h1 class="text-danger">Проект не найден</h1>
+    <p>Проект с указанным идентификатором отсутствует.</p>
+    <a href="{% url 'projects_app:projects' %}"
+       class="btn btn-outline-secondary">
+        ← к списку проектов
+    </a>
+{% endif %}
+{% endblock %}

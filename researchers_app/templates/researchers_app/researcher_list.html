@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Исследователи{% endblock %}
+
+{% block content %}
+<h1>Исследователи</h1>
+<p>Всего исследователей: {{ researchers|length }}</p>
+
+<ul class="list-group">
+    {% for r in researchers %}
+        <li class="list-group-item">
+            [{{ r.id }}] {{ r.name }} — {{ r.field }}
+        </li>
+    {% empty %}
+        <li class="list-group-item">Исследователей пока нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

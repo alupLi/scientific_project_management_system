@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Проекты{% endblock %}
+
+{% block content %}
+<h1>Проекты</h1>
+<p>Всего проектов: {{ projects|length }}</p>
+
+<ul class="list-group">
+    {% for project in projects %}
+        {% include "projects_app/includes/project_card.html" %}
+    {% empty %}
+        <li class="list-group-item">Проектов пока нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

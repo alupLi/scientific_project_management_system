@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Публикации{% endblock %}
+
+{% block content %}
+<h1>Публикации</h1>
+<p>Всего публикаций: {{ publications|length }}</p>
+
+<ul class="list-group">
+    {% for pub in publications %}
+        <li class="list-group-item">
+            {{ pub.title }} — {{ pub.journal }} ({{ pub.date }})
+        </li>
+    {% empty %}
+        <li class="list-group-item">Публикаций пока нет.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
