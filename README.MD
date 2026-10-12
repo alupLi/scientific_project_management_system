@@ -127,18 +127,39 @@ room_booking/
 
 ## Веб-интерфейс
 
-Страницы приложения:
+Веб-часть приложения реализована на Django 5.2 с использованием
+системы шаблонов Django.
 
-| URL | Назначение | View-функция |
-|-----|-----------|--------------|
-| `/` | Главная страница | `homepage.views.index` |
-| `/projects/` | Список проектов | `projects_app.views.projects` |
-| `/projects/<int:project_id>/` | Карточка проекта | `projects_app.views.project_detail` |
-| `/publications/` | Список публикаций | `publications_app.views.publications` |
-| `/researchers/` | Список исследователей | `researchers_app.views.researchers` |
+### Страницы
 
-При отсутствии объекта с указанным ID возвращается страница с кодом 404.
+| URL | Назначение | Шаблон |
+|-----|-----------|--------|
+| `/` | Главная | `homepage/index.html` |
+| `/projects/` | Список проектов | `projects_app/project_list.html` |
+| `/projects/<int:project_id>/` | Карточка проекта | `projects_app/project_detail.html` |
+| `/publications/` | Список публикаций | `publications_app/publication_list.html` |
+| `/researchers/` | Список исследователей | `researchers_app/researcher_list.html` |
 
+### Шаблоны
+
+- `templates/base.html` — базовый шаблон с блоками `{% block title %}` и `{% block content %}`
+- `templates/includes/navigation.html` — общая навигация (подключается через `{% include %}`)
+- `projects_app/templates/projects_app/includes/project_card.html` — карточка проекта
+- Шаблоны приложений наследуют `base.html` через `{% extends %}`
+
+### Статические файлы
+
+Расположены в `homepage/static/homepage/`:
+- `css/style.css` — собственные стили
+- `js/main.js` — вывод текущего года в подвале
+- `img/logo.png` — логотип
+
+### Архитектура
+
+HTML больше не формируется в Python-коде. Функция `page()` из ПР5 удалена.
+Все ссылки формируются через `{% url %}` с использованием namespace приложений.
+
+---
 
 ## Запуск
 
