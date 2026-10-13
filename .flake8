@@ -1,0 +1,10 @@
+[flake8]
+extend-exclude =
+    venv,
+    migrations,
+    __pycache__,
+    */settings.py,
+    */admin.py,
+    */apps.py,
+    */models.py,
+    */tests.py
