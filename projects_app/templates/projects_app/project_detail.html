@@ -12,15 +12,11 @@
 
     <h3 class="mt-4">Задачи</h3>
     <ul class="list-group">
-        {% for task in project.tasks %}
+        {% for task in tasks %}
             <li class="list-group-item d-flex justify-content-between">
                 <span>
                     {{ task.task_name }} —
-                    {% if task.researcher %}
-                        {{ task.researcher.name }}
-                    {% else %}
-                        не назначен
-                    {% endif %}
+                    {{ task.researcher_name }}
                     (до {{ task.deadline }})
                 </span>
                 {% if task.status == "active" %}
@@ -36,7 +32,7 @@
 
     <h3 class="mt-4">Источники</h3>
     <ul class="list-group">
-        {% for pub in project.references %}
+        {% for pub in publications %}
             <li class="list-group-item">
                 {{ pub.title }} — {{ pub.journal }} ({{ pub.date }})
             </li>
