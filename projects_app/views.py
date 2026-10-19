@@ -1,23 +1,20 @@
 from django.shortcuts import render
 
-from storage import (
-    load_projects, load_researchers, load_publications,
-)
-
-
-def _load_all():
-    """Загружает проекты со связанными объектами."""
-    researchers = load_researchers("data/researchers.json")
-    publications = load_publications("data/publications.json")
-    return load_projects(
-        "data/projects.json", researchers, publications,
-    )
+from db import queries
 
 
 def projects(request):
-    """Список проектов."""
+    """Список проектов (с поддержкой поиска)."""
+    query = request.GET.get("search", "").strip()
+
+    if query:
+        projects_list = queries.search_projects(query)
+    else:
+        projects_list = queries.get_all_projects()
+
     context = {
-        "projects": _load_all(),
+        "projects": projects_list,
+        "search_query": query,
     }
     return render(
         request, "projects_app/project_list.html", context,
@@ -25,18 +22,25 @@ def projects(request):
 
 
 def project_detail(request, project_id):
-    """Карточка проекта."""
-    projects_list = _load_all()
-    project = next(
-        (p for p in projects_list if p.id == project_id),
-        None,
-    )
+    """Карточка проекта с задачами и источниками."""
+    project = queries.get_project_by_id(project_id)
+
+    if project is None:
+        return render(
+            request,
+            "projects_app/project_detail.html",
+            {"project": None},
+            status=404,
+        )
+
+    tasks = queries.get_tasks_for_project(project_id)
+    publications = queries.get_publications_for_project(project_id)
+
     context = {
         "project": project,
+        "tasks": tasks,
+        "publications": publications,
     }
     return render(
-        request,
-        "projects_app/project_detail.html",
-        context,
-        status=404 if project is None else 200,
+        request, "projects_app/project_detail.html", context,
     )

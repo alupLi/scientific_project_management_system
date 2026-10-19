@@ -1,14 +1,12 @@
 from django.shortcuts import render
 
-from storage import load_publications
+from db import queries
 
 
 def publications(request):
-    """Список публикаций."""
+    """Список публикаций из БД."""
     context = {
-        "publications": load_publications(
-            "data/publications.json",
-        ),
+        "publications": queries.get_all_publications(),
     }
     return render(
         request, "publications_app/publication_list.html", context,
