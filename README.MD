@@ -154,6 +154,63 @@ room_booking/
 - `js/main.js` — вывод текущего года в подвале
 - `img/logo.png` — логотип
 
+
+## Хранение данных (ПР7)
+
+Проект использует двухуровневую систему хранения:
+1. **SQLite-база данных** — основное хранилище для веб-интерфейса.
+2. **JSON-файлы** — исходные данные, сохранённые с предыдущих этапов.
+
+### Структура базы данных
+
+Файл базы данных: `data/project_db.sqlite`.
+
+Таблицы:
+- `researchers` (id, name, field) — исследователи;
+- `publications` (id, title, journal, date) — публикации;
+- `projects` (id, name, start, end) — научные проекты;
+- `tasks` (id, project_id, task_name, researcher_id, deadline, status) — задачи;
+- `project_references` (project_id, publication_id) — связь проектов и публикаций (многие ко многим).
+
+Внешние ключи:
+- `tasks.project_id` → `projects.id`
+- `tasks.researcher_id` → `researchers.id`
+- `project_references.project_id` → `projects.id`
+- `project_references.publication_id` → `publications.id`
+
+### Модули работы с базой данных
+
+- `sql/schema.sql` — SQL-команды создания таблиц;
+- `sql/queries.sql` — все разработанные SQL-запросы (выборка, фильтрация, JOIN, COUNT, GROUP BY);
+- `db/database.py` — подключение к SQLite с включением проверки внешних ключей и настройкой `row_factory`;
+- `db/queries.py` — функции получения данных для Django-представлений;
+- `db/import_json.py` — скрипт переноса данных из JSON в SQLite.
+
+## Слой данных (ПР9)
+
+Начиная с ПР9, проект использует **Django ORM** для работы с базой данных. 
+Ручные SQL-запросы (из ПР7) больше не используются в представлениях.
+
+### Модели
+- **Researcher** (`researchers_app`): `name`, `field`
+- **Publication** (`publications_app`): `title`, `journal`, `date`
+- **Project** (`projects_app`): `name`, `start`, `end`, `references` (M2M с Publication)
+- **Task** (`projects_app`): `project` (FK), `researcher` (FK), `task_name`, `deadline`, `status`
+
+### Миграции
+Для управления структурой БД используются миграции Django:
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Перенос данных
+Данные из базы ПР7 перенесены в базу Django (`db.sqlite3`) с помощью скрипта `db/import_to_orm.py`.
+
+### Работа с данными
+- Списки, фильтрация, сортировка и пагинация реализованы через методы ORM (`all()`, `filter()`, `order_by()`, `annotate()`, `Paginator`).
+- Карточки объектов используют `get_object_or_404()` и связанные модели (через `select_related` и `prefetch_related`).
+
 ### Архитектура
 
 HTML больше не формируется в Python-коде. Функция `page()` из ПР5 удалена.
@@ -170,6 +227,23 @@ HTML больше не формируется в Python-коде. Функция
 - Django==5.2.* Для веб версии
 
 `py -m pip install -r requirements.txt`
+
+### Пересоздание базы данных
+
+Если база данных повреждена или требуется пересоздать её из JSON:
+
+```bash
+# 1. Удалить старый файл базы
+Remove-Item .\data\project_db.sqlite
+
+# 2. Создать пустой файл
+py -c "import sqlite3; sqlite3.connect('data/project_db.sqlite').close()"
+
+# 3. Применить схему
+py -c "import sqlite3; conn=sqlite3.connect('data/project_db.sqlite'); conn.executescript(open('sql/schema.sql', encoding='utf-8').read()); conn.close()"
+
+# 4. Импортировать данные из JSON
+py -m db.import_json
 
 ### Веб-версия (Django)
 
@@ -193,11 +267,8 @@ py -m flake8
 
 ## Текущее состояние
 
-Реализовано (ПР5):
-* Django-проект и 4 приложения (`homepage`, `projects_app`, `publications_app`, `researchers_app`)
-* маршрутизация URL двух уровней
-* view-функции и страницы
-* отображение данных предметной области (проекты, публикации, исследователи)
-* навигация между страницами
-* оформление Bootstrap 5.3
-* обработка ошибки 404
+Реализовано:
+- ПР1–ПР3: консольное приложение с ООП-моделью и JSON-хранилищем;
+- ПР5: Django-проект и веб-страницы (HTTP, URL, views);
+- ПР6: Django-шаблоны (base.html, extends, include, static);
+- ПР7: база данных SQLite, SQL-запросы, перенос данных из JSON.
