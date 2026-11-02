@@ -1,12 +1,12 @@
 from django.shortcuts import render
-
-from db import queries
+from django.db.models import Count
+from researchers_app.models import Researcher
 
 
 def researchers(request):
     """Список исследователей из БД."""
     context = {
-        "researchers": queries.get_all_researchers(),
+        "researchers": Researcher.objects.all(),
     }
     return render(
         request, "researchers_app/researcher_list.html", context,
@@ -15,8 +15,13 @@ def researchers(request):
 
 def statistics(request):
     """Статистика: количество задач у исследователей."""
+    # Аннотируем исследователей количеством их задач
+    stats = Researcher.objects.annotate(
+        task_count=Count("tasks")
+    ).order_by("-task_count")
+
     context = {
-        "stats": queries.get_researcher_stats(),
+        "stats": stats,
     }
     return render(
         request, "researchers_app/statistics.html", context,

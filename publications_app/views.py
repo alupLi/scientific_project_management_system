@@ -1,12 +1,11 @@
 from django.shortcuts import render
-
-from db import queries
+from publications_app.models import Publication
 
 
 def publications(request):
     """Список публикаций из БД."""
     context = {
-        "publications": queries.get_all_publications(),
+        "publications": Publication.objects.all(),
     }
     return render(
         request, "publications_app/publication_list.html", context,
