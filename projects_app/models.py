@@ -72,35 +72,41 @@ class Project(models.Model):
         verbose_name = "Проект"
         verbose_name_plural = "Проекты"
 
+class TaskQuerySet(models.QuerySet):
+    """Набор запросов для задач."""
+    def active(self):
+        return self.filter(status=Task.Status.ACTIVE)
+
+    def completed(self):
+        return self.filter(status=Task.Status.COMPLETED)
+
+    def cancelled(self):
+        return self.filter(status=Task.Status.CANCELLED)
+
+
+class TaskManager(models.Manager.from_queryset(TaskQuerySet)):
+    """Менеджер модели Task."""
+    pass
+
+
 class Task(models.Model):
-    # Связь "многие к одному": в проекте много задач
-    project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        related_name="tasks",
-        verbose_name="Проект",
-    )
-    # Связь "многие к одному": исполнитель задачи
-    researcher = models.ForeignKey(
-        Researcher,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="tasks",
-        verbose_name="Исполнитель",
-    )
-    task_name = models.CharField(
-        max_length=300,
-        verbose_name="Название задачи",
-    )
-    deadline = models.DateField(
-        verbose_name="Дедлайн",
-    )
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Активна"
+        COMPLETED = "completed", "Завершена"
+        CANCELLED = "cancelled", "Отменена"
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks", verbose_name="Проект")
+    researcher = models.ForeignKey(Researcher, on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks", verbose_name="Исполнитель")
+    task_name = models.CharField(max_length=300, verbose_name="Название задачи", help_text="Введите название задачи")
+    deadline = models.DateField(verbose_name="Дедлайн")
     status = models.CharField(
-        max_length=50,
-        default="active",
-        verbose_name="Статус",
+        max_length=50, 
+        choices=Status.choices, 
+        default=Status.ACTIVE, 
+        verbose_name="Статус"
     )
+    
+    objects = TaskManager()
 
     def __str__(self):
         return self.task_name
