@@ -17,7 +17,8 @@
         {% block content %}{% endblock %}
     </main>
     <footer class="container mt-5 mb-3 text-muted">
-        <p>© <span id="current-year"></span> Научные проекты</p>
+        <p>© <span id="current-year"></span> {{ site_name }}</p>
+        <p>Всего проектов в базе: {{ projects_count }}</p>  <!-- <-- Вот здесь -->
     </footer>
     <script src="{% static 'homepage/js/main.js' %}"></script>
 </body>

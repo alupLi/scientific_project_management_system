@@ -1,11 +1,19 @@
 from django.db import models
-
+from django.urls import reverse  # <-- Обязательно добавь этот импорт!
+from django.utils.text import slugify
+from unidecode import unidecode
 # Импортируем модели из других приложений для связей
 from researchers_app.models import Researcher
 from publications_app.models import Publication
 
 
 class Project(models.Model):
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Активен"
+        COMPLETED = "completed", "Завершен"
+        CANCELLED = "cancelled", "Отменен"
+
     name = models.CharField(
         max_length=300,
         verbose_name="Название проекта",
@@ -16,7 +24,18 @@ class Project(models.Model):
     end = models.DateField(
         verbose_name="Дата окончания",
     )
-    # Связь "многие ко многим": проект изучает несколько публикаций
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.ACTIVE,
+        verbose_name="Статус проекта",
+    )
+    slug = models.SlugField(
+        max_length=300,
+        unique=True,
+        blank=True,
+        verbose_name="URL-идентификатор",
+    )
     references = models.ManyToManyField(
         Publication,
         blank=True,
@@ -24,14 +43,34 @@ class Project(models.Model):
         verbose_name="Изученные источники",
     )
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(unidecode(self.name)) or "project"
+            # Если проект новый, pk еще нет
+            if not self.pk:
+                super().save(*args, **kwargs)
+                base = slugify(unidecode(self.name)) or "project"
+                self.slug = f"{base}-{self.pk}"
+                super().save(update_fields=["slug"])
+                return
+            self.slug = f"{base}-{self.pk}"
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.name
+
+    # Вот этот метод нужно добавить:
+    def get_absolute_url(self):
+        """Возвращает URL карточки проекта."""
+        return reverse(
+            "projects_app:project_detail",
+            kwargs={"slug": self.slug},
+        )
 
     class Meta:
         ordering = ["name"]
         verbose_name = "Проект"
         verbose_name_plural = "Проекты"
-
 
 class Task(models.Model):
     # Связь "многие к одному": в проекте много задач

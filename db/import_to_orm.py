@@ -4,10 +4,15 @@ import sqlite3
 import django
 from datetime import date
 from pathlib import Path
-
 from researchers_app.models import Researcher
 from publications_app.models import Publication
 from projects_app.models import Project, Task
+
+# Настраиваем Django
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE_DIR))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "roomly.settings")
+django.setup()
 
 # Настраиваем Django
 BASE_DIR = Path(__file__).resolve().parent.parent
