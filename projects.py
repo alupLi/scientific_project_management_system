@@ -1,114 +1,42 @@
-from django.db import models
-from django.urls import reverse
-from django.utils.text import slugify
-from unidecode import unidecode
-
-# Импортируем модели из других приложений для связей
-from researchers_app.models import Researcher
-from publications_app.models import Publication
+from typing import List
+from datetime import date
+from models import Project, Publication
 
 
-class Project(models.Model):
-
-    class Status(models.TextChoices):
-        ACTIVE = "active", "Активен"
-        COMPLETED = "completed", "Завершен"
-        CANCELLED = "cancelled", "Отменен"
-
-    name = models.CharField(
-        max_length=300,
-        verbose_name="Название проекта",
+def create_project(projects: List[Project],
+                   name: str,
+                   start: date,
+                   end: date) -> Project:
+    new_id = max((p.id for p in projects), default=0) + 1
+    new_project = Project(
+        new_id, name,
+        start.isoformat(), end.isoformat(),
     )
-    start = models.DateField(
-        verbose_name="Дата начала",
-    )
-    end = models.DateField(
-        verbose_name="Дата окончания",
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.ACTIVE,
-        verbose_name="Статус проекта",
-    )
-    slug = models.SlugField(
-        max_length=300,
-        unique=True,
-        blank=True,
-        verbose_name="URL-идентификатор",
-    )
-    # Связь "многие ко многим": проект изучает несколько публикаций
-    references = models.ManyToManyField(
-        Publication,
-        blank=True,
-        related_name="projects",
-        verbose_name="Изученные источники",
-    )
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base = slugify(unidecode(self.name)) or "project"
-            # Если объект новый, pk еще нет, используем 'new'
-            # Но лучше сохранить сначала, чтобы получить pk
-            if not self.pk:
-                super().save(*args, **kwargs)
-                base = slugify(unidecode(self.name)) or "project"
-                self.slug = f"{base}-{self.pk}"
-                super().save(update_fields=["slug"])
-                return
-            self.slug = f"{base}-{self.pk}"
-        super().save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        """Возвращает URL карточки проекта."""
-        return reverse(
-            "projects_app:project_detail",
-            kwargs={"slug": self.slug},
-        )
-
-    class Meta:
-        ordering = ["name"]
-        verbose_name = "Проект"
-        verbose_name_plural = "Проекты"
+    projects.append(new_project)
+    return new_project
 
 
-class Task(models.Model):
-    # Связь "многие к одному": в проекте много задач
-    project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        related_name="tasks",
-        verbose_name="Проект",
-    )
-    # Связь "многие к одному": исполнитель задачи
-    researcher = models.ForeignKey(
-        Researcher,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="tasks",
-        verbose_name="Исполнитель",
-    )
-    task_name = models.CharField(
-        max_length=300,
-        verbose_name="Название задачи",
-    )
-    deadline = models.DateField(
-        verbose_name="Дедлайн",
-    )
-    status = models.CharField(
-        max_length=50,
-        default="active",
-        verbose_name="Статус",
-    )
+def find_projects(projects: List[Project],
+                  query: str) -> List[Project]:
+    return [p for p in projects if query.lower() in p.name.lower()]
 
-    def __str__(self):
-        return self.task_name
 
-    class Meta:
-        ordering = ["deadline"]
-        verbose_name = "Задача"
-        verbose_name_plural = "Задачи"
+def projects_statistics(projects: List[Project]) -> dict:
+    total_tasks = sum(len(p.tasks) for p in projects)
+    total_refs = sum(len(p.references) for p in projects)
+    return {
+        "total_projects": len(projects),
+        "total_tasks": total_tasks,
+        "total_references": total_refs,
+    }
+
+
+def add_reference_to_project(projects: List[Project],
+                             project_id: int,
+                             publication: Publication) -> bool:
+    """Привязывает публикацию к проекту как источник."""
+    project = next((p for p in projects if p.id == project_id), None)
+    if not project:
+        return False
+    project.add_reference(publication)
+    return True
