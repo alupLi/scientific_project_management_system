@@ -1,9 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 from django.core.paginator import Paginator
-from projects_app.models import Project
+# from projects_app.models import Project
 from django.shortcuts import redirect
-from .forms import ProjectForm
 from .forms import ProjectForm, TaskForm
 from projects_app.models import Project, Task
 
