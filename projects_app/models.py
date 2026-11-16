@@ -15,7 +15,7 @@ class Project(models.Model):
         CANCELLED = "cancelled", "Отменен"
 
     name = models.CharField(
-        max_length=300,
+        max_length=100,
         verbose_name="Название проекта",
     )
     start = models.DateField(
@@ -42,6 +42,12 @@ class Project(models.Model):
         related_name="projects",
         verbose_name="Изученные источники",
     )
+    cover_image = models.ImageField(
+        upload_to='project_covers/',
+        blank=True,
+        null=True,
+        verbose_name="Обложка проекта",
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -59,7 +65,6 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-    # Вот этот метод нужно добавить:
     def get_absolute_url(self):
         """Возвращает URL карточки проекта."""
         return reverse(

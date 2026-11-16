@@ -3,3 +3,4 @@ flake8
 Django==5.2.*
 django-debug-toolbar
 unidecode
+Pillow
