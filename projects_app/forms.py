@@ -112,19 +112,39 @@ class TaskForm(forms.ModelForm):
         self.project = project
 
     def clean(self):
-        """Проверка, что дедлайн не раньше даты начала проекта."""
+        """Проверка дедлайна и уникальности названия задачи в проекте."""
         cleaned_data = super().clean()
         deadline = cleaned_data.get("deadline")
+        task_name = cleaned_data.get("task_name")
 
-        # Проект может быть передан явно (при создании),
-        # либо взят из instance (при редактировании).
+        # Проект берем либо переданный, либо из редактируемой задачи
         project = self.project or (
             self.instance.project if self.instance.pk else None
         )
 
+        # Проверка даты
         if project and deadline and deadline < project.start:
             raise ValidationError(
                 "Дедлайн не может быть раньше даты начала проекта "
                 f"({project.start})."
             )
+
+        # Проверка уникальности названия задачи в рамках проекта
+        if project and task_name:
+            # Ищем задачи с таким же названием в этом проекте
+            conflicts = Task.objects.filter(
+                project=project,
+                task_name__iexact=task_name,
+            )
+
+            # При редактировании исключаем текущую задачу
+            if self.instance.pk:
+                conflicts = conflicts.exclude(pk=self.instance.pk)
+
+            if conflicts.exists():
+                raise ValidationError(
+                    f"В проекте «{project.name}» уже есть задача "
+                    f"с названием «{task_name}»."
+                )
+
         return cleaned_data
