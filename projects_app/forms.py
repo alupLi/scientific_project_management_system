@@ -25,12 +25,14 @@ class ProjectForm(forms.ModelForm):
                 }
             ),
             "start": forms.DateInput(
+                format="%Y-%m-%d",
                 attrs={
                     "class": "form-control",
                     "type": "date",
                 }
             ),
             "end": forms.DateInput(
+                format="%Y-%m-%d",
                 attrs={
                     "class": "form-control",
                     "type": "date",
@@ -90,6 +92,7 @@ class TaskForm(forms.ModelForm):
                 attrs={"class": "form-select"},
             ),
             "deadline": forms.DateInput(
+                format="%Y-%m-%d",
                 attrs={
                     "class": "form-control",
                     "type": "date",
